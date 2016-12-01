@@ -54,8 +54,38 @@ REST_ROUTER.prototype.handleRoutes= function(router,connection,md5) {
         });
   });
   router.put("/user/:id",function(req,res){
-    
+    var tab = [];
+    var result = {};
+      for (var key in req.body) {
+        if (req.body.hasOwnProperty(key)) {
+          var query = "UPDATE ?? SET ?? = ? WHERE ?? = ?";
+           var table = ["user",key,req.body[key],"id",req.params.id];
+           query = mysql.format(query,table);
+           console.log("Before");
+           console.log(result);
+           connection.query(query,function(err,rows){
+               if(err) {
+                   result = {'Error':true, "Message":"Error executing MySQL query"};
+                   tab.push(result);
+               } else {
+                   result = {'Error':false, 'Message': "Updated "+ key};
+                   tab.push(result)
+               }
+           });
+        }
+      }
+      res.json({});
   });
+  router.delete("/users/:id",function(req,res){
+        var query = "DELETE from ?? WHERE ??=?";
+        var table = ["user","id",req.params.id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : 204, "Message" : "No datas"});
+            }
+        });
+    });
 }
 
 module.exports = REST_ROUTER;
